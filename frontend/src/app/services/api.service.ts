@@ -60,7 +60,7 @@ export interface UserDonationHistory {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = 'http://blood-donation-backend:3000';
 
   constructor(private http: HttpClient) {}
 

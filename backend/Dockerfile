@@ -11,7 +11,7 @@ RUN npm install --production
 COPY dist ./dist
 
 # Copy SQLite DB
-COPY blood_donation.db ./dist/blood_donation.db
+COPY data/blood_donation.db ./dist/data/blood_donation.db
 
 # Expose the app port
 EXPOSE 3000
