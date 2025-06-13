@@ -1,0 +1,56 @@
+name: Build and Deploy Backend APP
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+    #   - name: Run tests
+    #     working-directory: ./backend
+    #     run: npm run test  # Optional – remove if not needed
+
+      - name: Build NestJS app
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Archive production build
+        working-directory: ./backend
+        run: |
+          mkdir dist-artifact
+          cp -r dist package.json dist-artifact/
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          working-directory: ./backend
+          name: nestjs-build
+          path: dist-artifact
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/blooddonation-backend:latest ./backend
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/blooddonation-backend:latest
