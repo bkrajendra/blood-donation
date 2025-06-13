@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query } from '@nestjs/common';
 import { DonationsService } from './donations.service';
 import { CreateDonationDto } from './dto/create-donation.dto';
 import { UpdateDonationStatusDto } from './dto/update-donation-status.dto';
@@ -13,18 +13,28 @@ export class DonationsController {
   }
 
   @Get()
-  findAll() {
-    return this.donationsService.findAll();
+  findAll(@Query('year') year?: string) {
+    return this.donationsService.findAll(year ? parseInt(year) : undefined);
   }
 
   @Get('statistics')
-  getStatistics() {
-    return this.donationsService.getStatistics();
+  getStatistics(@Query('year') year?: string) {
+    return this.donationsService.getStatistics(year ? parseInt(year) : undefined);
+  }
+
+  @Get('years')
+  getAvailableYears() {
+    return this.donationsService.getAvailableYears();
   }
 
   @Get('user/:userId')
   findByUserId(@Param('userId') userId: string) {
     return this.donationsService.findByUserId(+userId);
+  }
+
+  @Get('user/:userId/history')
+  getUserDonationHistory(@Param('userId') userId: string) {
+    return this.donationsService.getUserDonationHistory(+userId);
   }
 
   @Patch(':id/status')

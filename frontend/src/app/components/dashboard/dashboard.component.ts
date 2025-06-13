@@ -1,16 +1,27 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ApiService, Statistics } from '../../services/api.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="fade-in">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h2 style="color: #dc2626;">Live Dashboard</h2>
         <div style="display: flex; align-items: center; gap: 1rem;">
+          <div class="form-group" style="margin: 0;">
+            <select 
+              class="form-input" 
+              [(ngModel)]="selectedYear" 
+              (change)="onYearChange()"
+              style="min-width: 150px;">
+              <option value="">All Time</option>
+              <option *ngFor="let year of availableYears" [value]="year">{{year}}</option>
+            </select>
+          </div>
           <span style="color: #64748b; font-size: 0.875rem;">
             Last updated: {{lastUpdated | date:'short'}}
           </span>
@@ -29,26 +40,43 @@ import { ApiService, Statistics } from '../../services/api.service';
         <div class="stat-card">
           <div class="stat-value">{{stats.total}}</div>
           <div class="stat-label">Total Registrations</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+            {{selectedYear ? selectedYear : 'All Time'}}
+          </div>
         </div>
 
         <div class="stat-card" style="border-left-color: #16a34a;">
           <div class="stat-value" style="color: #16a34a;">{{stats.donated}}</div>
           <div class="stat-label">Successfully Donated</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+            {{selectedYear ? selectedYear : 'All Time'}}
+          </div>
         </div>
 
         <div class="stat-card" style="border-left-color: #f59e0b;">
           <div class="stat-value" style="color: #f59e0b;">{{stats.pending}}</div>
           <div class="stat-label">Pending Checkup</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+            {{selectedYear ? selectedYear : 'All Time'}}
+          </div>
         </div>
 
         <div class="stat-card" style="border-left-color: #ef4444;">
           <div class="stat-value" style="color: #ef4444;">{{stats.rejected}}</div>
           <div class="stat-label">Not Eligible</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+            {{selectedYear ? selectedYear : 'All Time'}}
+          </div>
         </div>
       </div>
 
       <div *ngIf="stats" class="card slide-up">
-        <h3 style="margin-bottom: 1.5rem; color: #374151;">Donation Progress</h3>
+        <h3 style="margin-bottom: 1.5rem; color: #374151;">
+          Donation Progress 
+          <span style="font-size: 1rem; color: #64748b; font-weight: normal;">
+            ({{selectedYear ? selectedYear : 'All Time'}})
+          </span>
+        </h3>
         
         <div style="margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
@@ -103,10 +131,16 @@ import { ApiService, Statistics } from '../../services/api.service';
       </div>
 
       <div *ngIf="stats" class="card slide-up">
-        <h3 style="margin-bottom: 1.5rem; color: #374151;">Impact Summary</h3>
+        <h3 style="margin-bottom: 1.5rem; color: #374151;">
+          Impact Summary 
+          <span style="font-size: 1rem; color: #64748b; font-weight: normal;">
+            ({{selectedYear ? selectedYear : 'All Time'}})
+          </span>
+        </h3>
         <div style="background: linear-gradient(135deg, #fef3f2 0%, #fee2e2 100%); padding: 1.5rem; border-radius: 8px;">
           <p style="font-size: 1.125rem; line-height: 1.6; margin: 0;">
-            🎉 <strong>Congratulations!</strong> Through this blood donation drive, we have collected 
+            🎉 <strong>Congratulations!</strong> 
+            {{selectedYear ? 'In ' + selectedYear + ', we' : 'Through this blood donation drive, we'}} have collected 
             <strong style="color: #dc2626;">{{getTotalBloodVolume()}}ml</strong> of blood from 
             <strong style="color: #dc2626;">{{stats.donated}}</strong> generous donors. 
             This amount can potentially save up to 
@@ -120,6 +154,8 @@ import { ApiService, Statistics } from '../../services/api.service';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   stats: Statistics | null = null;
+  availableYears: number[] = [];
+  selectedYear: string = '';
   loading = false;
   lastUpdated = new Date();
   private intervalId: any;
@@ -127,6 +163,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private apiService: ApiService) {}
 
   ngOnInit() {
+    this.loadAvailableYears();
     this.loadStats();
     
     // Auto-refresh every 30 seconds
@@ -141,13 +178,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  async loadAvailableYears() {
+    try {
+      this.availableYears = await this.apiService.getAvailableYears().toPromise() || [];
+    } catch (error) {
+      console.error('Error loading available years:', error);
+    }
+  }
+
   async loadStats() {
     try {
-      this.stats = await this.apiService.getStatistics().toPromise() || null;
+      const year = this.selectedYear ? parseInt(this.selectedYear) : undefined;
+      this.stats = await this.apiService.getStatistics(year).toPromise() || null;
       this.lastUpdated = new Date();
     } catch (error) {
       console.error('Error loading statistics:', error);
     }
+  }
+
+  async onYearChange() {
+    await this.loadStats();
   }
 
   async refreshStats() {

@@ -1,18 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ApiService, User, Donation, Statistics } from '../../services/api.service';
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="fade-in">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h2 style="color: #dc2626;">Blood Donation Reports</h2>
-        <button class="btn btn-secondary" (click)="exportReport()">
-          📊 Export Report
-        </button>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <div class="form-group" style="margin: 0;">
+            <select 
+              class="form-input" 
+              [(ngModel)]="selectedYear" 
+              (change)="onYearChange()"
+              style="min-width: 150px;">
+              <option value="">All Time</option>
+              <option *ngFor="let year of availableYears" [value]="year">{{year}}</option>
+            </select>
+          </div>
+          <button class="btn btn-secondary" (click)="exportReport()">
+            📊 Export Report
+          </button>
+        </div>
       </div>
 
       <!-- Summary Cards -->
@@ -20,27 +33,44 @@ import { ApiService, User, Donation, Statistics } from '../../services/api.servi
         <div class="stat-card">
           <div class="stat-value">{{stats.total}}</div>
           <div class="stat-label">Total Participants</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+            {{selectedYear ? selectedYear : 'All Time'}}
+          </div>
         </div>
 
         <div class="stat-card" style="border-left-color: #16a34a;">
           <div class="stat-value" style="color: #16a34a;">{{stats.donated}}</div>
           <div class="stat-label">Successful Donations</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+            {{selectedYear ? selectedYear : 'All Time'}}
+          </div>
         </div>
 
         <div class="stat-card" style="border-left-color: #ef4444;">
           <div class="stat-value" style="color: #ef4444;">{{stats.rejected}}</div>
           <div class="stat-label">Rejected Donations</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+            {{selectedYear ? selectedYear : 'All Time'}}
+          </div>
         </div>
 
         <div class="stat-card" style="border-left-color: #6366f1;">
           <div class="stat-value" style="color: #6366f1;">{{stats.donationRate}}%</div>
           <div class="stat-label">Success Rate</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+            {{selectedYear ? selectedYear : 'All Time'}}
+          </div>
         </div>
       </div>
 
       <!-- Blood Group Analysis -->
       <div class="card slide-up">
-        <h3 style="margin-bottom: 1.5rem; color: #374151;">Blood Group Distribution</h3>
+        <h3 style="margin-bottom: 1.5rem; color: #374151;">
+          Blood Group Distribution 
+          <span style="font-size: 1rem; color: #64748b; font-weight: normal;">
+            ({{selectedYear ? selectedYear : 'All Time'}})
+          </span>
+        </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
           <div *ngFor="let group of bloodGroupStats" 
                style="background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: center;">
@@ -59,7 +89,12 @@ import { ApiService, User, Donation, Statistics } from '../../services/api.servi
 
       <!-- Age Group Analysis -->
       <div class="card slide-up">
-        <h3 style="margin-bottom: 1.5rem; color: #374151;">Age Group Analysis</h3>
+        <h3 style="margin-bottom: 1.5rem; color: #374151;">
+          Age Group Analysis 
+          <span style="font-size: 1rem; color: #64748b; font-weight: normal;">
+            ({{selectedYear ? selectedYear : 'All Time'}})
+          </span>
+        </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
           <div *ngFor="let ageGroup of ageGroupStats" 
                style="background: #f8fafc; padding: 1.5rem; border-radius: 8px;">
@@ -82,7 +117,12 @@ import { ApiService, User, Donation, Statistics } from '../../services/api.servi
 
       <!-- Detailed Donations Table -->
       <div class="card slide-up">
-        <h3 style="margin-bottom: 1.5rem; color: #374151;">Detailed Donation Records</h3>
+        <h3 style="margin-bottom: 1.5rem; color: #374151;">
+          Detailed Donation Records 
+          <span style="font-size: 1rem; color: #64748b; font-weight: normal;">
+            ({{selectedYear ? selectedYear : 'All Time'}})
+          </span>
+        </h3>
         
         <div *ngIf="loadingDonations" class="loading">
           <div class="spinner"></div>
@@ -127,13 +167,18 @@ import { ApiService, User, Donation, Statistics } from '../../services/api.servi
 
         <div *ngIf="!loadingDonations && donations.length === 0" 
              style="text-align: center; padding: 2rem; color: #64748b;">
-          No donation records found.
+          No donation records found for {{selectedYear ? selectedYear : 'the selected period'}}.
         </div>
       </div>
 
       <!-- Summary Report -->
       <div class="card slide-up">
-        <h3 style="margin-bottom: 1.5rem; color: #374151;">Campaign Summary</h3>
+        <h3 style="margin-bottom: 1.5rem; color: #374151;">
+          Campaign Summary 
+          <span style="font-size: 1rem; color: #64748b; font-weight: normal;">
+            ({{selectedYear ? selectedYear : 'All Time'}})
+          </span>
+        </h3>
         <div style="background: linear-gradient(135deg, #fef3f2 0%, #fee2e2 100%); padding: 2rem; border-radius: 8px;">
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
             <div>
@@ -158,7 +203,7 @@ import { ApiService, User, Donation, Statistics } from '../../services/api.servi
               <h4 style="color: #dc2626; margin-bottom: 0.5rem;">🏥 Health Screening</h4>
               <ul style="list-style: none; padding: 0; margin: 0;">
                 <li style="margin-bottom: 0.25rem;">• Health Issues Found: <strong>{{healthIssuesCount}}</strong></li>
-                <li style="margin-bottom: 0.25rem;">• Healthy Donors: <strong>{{(stats?.total || 0) - healthIssuesCount}}</strong></li>
+                <li style="margin-bottom: 0.25rem;">• Healthy Donors: <strong>{{getHealthyDonorsCount()}}</strong></li>
                 <li style="margin-bottom: 0.25rem;">• Rejection Rate: <strong>{{getRejectionRate()}}%</strong></li>
               </ul>
             </div>
@@ -172,6 +217,8 @@ export class ReportsComponent implements OnInit {
   stats: Statistics | null = null;
   donations: Donation[] = [];
   users: User[] = [];
+  availableYears: number[] = [];
+  selectedYear: string = '';
   
   bloodGroupStats: any[] = [];
   ageGroupStats: any[] = [];
@@ -182,17 +229,32 @@ export class ReportsComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit() {
+    this.loadAvailableYears();
     this.loadReportData();
+  }
+
+  async loadAvailableYears() {
+    try {
+      this.availableYears = await this.apiService.getAvailableYears().toPromise() || [];
+    } catch (error) {
+      console.error('Error loading available years:', error);
+    }
+  }
+
+  async onYearChange() {
+    await this.loadReportData();
   }
 
   async loadReportData() {
     this.loadingDonations = true;
 
     try {
+      const year = this.selectedYear ? parseInt(this.selectedYear) : undefined;
+      
       // Load all data
       const [stats, donations, users] = await Promise.all([
-        this.apiService.getStatistics().toPromise(),
-        this.apiService.getAllDonations().toPromise(),
+        this.apiService.getStatistics(year).toPromise(),
+        this.apiService.getAllDonations(year).toPromise(),
         this.apiService.getAllUsers().toPromise()
       ]);
 
@@ -213,7 +275,17 @@ export class ReportsComponent implements OnInit {
   calculateBloodGroupStats() {
     const bloodGroupCounts: { [key: string]: number } = {};
     
-    this.users.forEach(user => {
+    // Get unique users from donations for the selected period
+    const uniqueUsers = new Map();
+    this.donations.forEach(donation => {
+      if (donation.user && donation.user.id) {
+        uniqueUsers.set(donation.user.id, donation.user);
+      }
+    });
+
+    const usersInPeriod = Array.from(uniqueUsers.values());
+    
+    usersInPeriod.forEach((user: User) => {
       if (user.bloodGroup) {
         bloodGroupCounts[user.bloodGroup] = (bloodGroupCounts[user.bloodGroup] || 0) + 1;
       }
@@ -222,7 +294,7 @@ export class ReportsComponent implements OnInit {
     this.bloodGroupStats = Object.entries(bloodGroupCounts).map(([bloodGroup, count]) => ({
       bloodGroup,
       count,
-      percentage: this.users.length > 0 ? Math.round((count / this.users.length) * 100) : 0
+      percentage: usersInPeriod.length > 0 ? Math.round((count / usersInPeriod.length) * 100) : 0
     })).sort((a, b) => b.count - a.count);
   }
 
@@ -235,21 +307,52 @@ export class ReportsComponent implements OnInit {
       { range: '56-65', min: 56, max: 65 }
     ];
 
+    // Get unique users from donations for the selected period
+    const uniqueUsers = new Map();
+    this.donations.forEach(donation => {
+      if (donation.user && donation.user.id) {
+        uniqueUsers.set(donation.user.id, donation.user);
+      }
+    });
+
+    const usersInPeriod = Array.from(uniqueUsers.values());
+
     this.ageGroupStats = ageGroups.map(group => {
-      const count = this.users.filter(user => 
+      const count = usersInPeriod.filter((user: User) => 
         user.age >= group.min && user.age <= group.max
       ).length;
       
       return {
         range: group.range,
         count,
-        percentage: this.users.length > 0 ? Math.round((count / this.users.length) * 100) : 0
+        percentage: usersInPeriod.length > 0 ? Math.round((count / usersInPeriod.length) * 100) : 0
       };
     }).filter(group => group.count > 0);
   }
 
   calculateHealthStats() {
-    this.healthIssuesCount = this.users.filter(user => user.hasHealthIssues).length;
+    // Get unique users from donations for the selected period
+    const uniqueUsers = new Map();
+    this.donations.forEach(donation => {
+      if (donation.user && donation.user.id) {
+        uniqueUsers.set(donation.user.id, donation.user);
+      }
+    });
+
+    const usersInPeriod = Array.from(uniqueUsers.values());
+    this.healthIssuesCount = usersInPeriod.filter((user: User) => user.hasHealthIssues).length;
+  }
+
+  getHealthyDonorsCount(): number {
+    const uniqueUsers = new Map();
+    this.donations.forEach(donation => {
+      if (donation.user && donation.user.id) {
+        uniqueUsers.set(donation.user.id, donation.user);
+      }
+    });
+
+    const usersInPeriod = Array.from(uniqueUsers.values());
+    return usersInPeriod.length - this.healthIssuesCount;
   }
 
   getTotalBloodVolume(): number {
@@ -276,7 +379,7 @@ export class ReportsComponent implements OnInit {
   }
 
   exportReport() {
-    // Create a simple CSV report
+    // Create a comprehensive CSV report
     const csvData = this.donations.map(donation => ({
       'Donor Name': donation.user?.name || '',
       'Mobile': donation.user?.mobile || '',
@@ -284,7 +387,9 @@ export class ReportsComponent implements OnInit {
       'Age': donation.user?.age || '',
       'Registration Date': this.formatDate(donation.createdAt),
       'Status': donation.status,
-      'Health Issues': donation.user?.hasHealthIssues ? 'Yes' : 'No'
+      'Health Issues': donation.user?.hasHealthIssues ? 'Yes' : 'No',
+      'Health Details': donation.user?.healthIssueDetails || '',
+      'Notes': donation.notes || ''
     }));
 
     const csv = this.convertToCSV(csvData);
@@ -292,7 +397,10 @@ export class ReportsComponent implements OnInit {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `blood-donation-report-${new Date().toISOString().split('T')[0]}.csv`;
+    const fileName = this.selectedYear 
+      ? `blood-donation-report-${this.selectedYear}.csv`
+      : `blood-donation-report-all-time-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = fileName;
     a.click();
     window.URL.revokeObjectURL(url);
   }

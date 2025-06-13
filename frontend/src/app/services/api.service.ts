@@ -33,6 +33,27 @@ export interface Statistics {
   rejected: number;
   pending: number;
   donationRate: number;
+  year?: string | number;
+}
+
+export interface UserDonationHistory {
+  user: User;
+  summary: {
+    totalDonations: number;
+    successfulDonations: number;
+    rejectedDonations: number;
+    pendingDonations: number;
+    successRate: number;
+  };
+  donationsByYear: Array<{
+    year: number;
+    total: number;
+    donated: number;
+    rejected: number;
+    pending: number;
+    donations: Donation[];
+  }>;
+  allDonations: Donation[];
 }
 
 @Injectable({
@@ -69,15 +90,25 @@ export class ApiService {
     return this.http.patch<Donation>(`${this.baseUrl}/donations/${id}/status`, { status, notes });
   }
 
-  getAllDonations(): Observable<Donation[]> {
-    return this.http.get<Donation[]>(`${this.baseUrl}/donations`);
+  getAllDonations(year?: number): Observable<Donation[]> {
+    const params = year ? `?year=${year}` : '';
+    return this.http.get<Donation[]>(`${this.baseUrl}/donations${params}`);
   }
 
-  getStatistics(): Observable<Statistics> {
-    return this.http.get<Statistics>(`${this.baseUrl}/donations/statistics`);
+  getStatistics(year?: number): Observable<Statistics> {
+    const params = year ? `?year=${year}` : '';
+    return this.http.get<Statistics>(`${this.baseUrl}/donations/statistics${params}`);
+  }
+
+  getAvailableYears(): Observable<number[]> {
+    return this.http.get<number[]>(`${this.baseUrl}/donations/years`);
   }
 
   getDonationsByUserId(userId: number): Observable<Donation[]> {
     return this.http.get<Donation[]>(`${this.baseUrl}/donations/user/${userId}`);
+  }
+
+  getUserDonationHistory(userId: number): Observable<UserDonationHistory> {
+    return this.http.get<UserDonationHistory>(`${this.baseUrl}/donations/user/${userId}/history`);
   }
 }
