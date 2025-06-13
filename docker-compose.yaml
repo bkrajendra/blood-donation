@@ -1,0 +1,22 @@
+services:
+  blood-donation-backend:
+    image: bkrajendra/blooddonation-backend:latest
+    container_name: backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    restart: always
+    environment:
+        - NODE_ENV=production
+        - PORT=3000
+
+  blood-donation-frontend:
+    image: bkrajendra/blooddonation-frontend:latest
+    container_name: frontend
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - blood-donation-backend
+
