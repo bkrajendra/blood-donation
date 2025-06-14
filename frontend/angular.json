@@ -17,6 +17,12 @@
               "sourceMap": true
             },
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "aot": true,
               "extractLicenses": true,
               "namedChunks": false,
@@ -26,7 +32,9 @@
             }
           },
           "options": {
-            "assets": [],
+            "assets": [
+              "src/assets" 
+            ],
             "index": "src/index.html",
             "browser": "src/main.ts",
             "outputPath": "dist/blood-donation-app",

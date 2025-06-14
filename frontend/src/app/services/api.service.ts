@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { ConfigService } from './config.service';
 
 export interface User {
   id?: number;
@@ -60,9 +62,11 @@ export interface UserDonationHistory {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://blood-donation-backend:3000';
+  private baseUrl = environment.backendUrl
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private config: ConfigService) {
+    this.baseUrl = this.config.backendUrl;
+  }
 
   // User endpoints
   findUserByMobile(mobile: string): Observable<User | null> {
