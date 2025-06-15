@@ -22,7 +22,7 @@ export class User {
   bloodGroup: string;
 
   @Column()
-  address: string;
+  company: string;
 
   @Column({ default: false })
   hasHealthIssues: boolean;

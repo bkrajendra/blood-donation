@@ -3,7 +3,7 @@ export class UpdateUserDto {
   email?: string;
   age?: number;
   bloodGroup?: string;
-  address?: string;
+  company?: string;
   hasHealthIssues?: boolean;
   healthIssueDetails?: string;
   isEligible?: boolean;

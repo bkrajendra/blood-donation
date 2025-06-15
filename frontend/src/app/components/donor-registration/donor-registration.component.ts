@@ -93,13 +93,13 @@ import { ApiService, User } from '../../services/api.service';
           </div>
 
           <div class="form-group">
-            <label class="form-label">Address *</label>
-            <textarea 
+            <label class="form-label">Company Name *</label>
+            <input 
               class="form-input" 
-              [(ngModel)]="user.address" 
-              name="address"
+              [(ngModel)]="user.company" 
+              name="company"
               rows="3"
-              required></textarea>
+              required>
           </div>
 
           <div class="form-group">
@@ -164,7 +164,7 @@ export class DonorRegistrationComponent implements OnInit {
     email: '',
     age: 18,
     bloodGroup: '',
-    address: '',
+    company: '',
     hasHealthIssues: false,
     healthIssueDetails: ''
   };
@@ -195,7 +195,7 @@ export class DonorRegistrationComponent implements OnInit {
           email: '',
           age: 18,
           bloodGroup: '',
-          address: '',
+          company: '',
           hasHealthIssues: false,
           healthIssueDetails: ''
         };
@@ -244,7 +244,7 @@ export class DonorRegistrationComponent implements OnInit {
       email: '',
       age: 18,
       bloodGroup: '',
-      address: '',
+      company: '',
       hasHealthIssues: false,
       healthIssueDetails: ''
     };
@@ -261,7 +261,7 @@ export class DonorRegistrationComponent implements OnInit {
       email: '',
       age: 18,
       bloodGroup: '',
-      address: '',
+      company: '',
       hasHealthIssues: false,
       healthIssueDetails: ''
     };
