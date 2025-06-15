@@ -4,7 +4,7 @@ services:
     container_name: backend
     # pull_policy: always
     volumes:
-      - ./data:/app/data
+      - ./data/blood_donation.db:/app/blood_donation.db
     restart: always
     environment:
       - NODE_ENV=production
