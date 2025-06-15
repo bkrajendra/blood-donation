@@ -19,7 +19,8 @@ services:
     container_name: frontend
     # pull_policy: always
     volumes:
-      - ./assets/config.json:/usr/share/nginx/html/assets/config.json    
+      - ./assets/config.json:/usr/share/nginx/html/assets/config.json
+      - /frontend/nginx.con:/etc/nginx/conf.d/default.conf
     # ports:
     #   - "81:80"
     restart: always

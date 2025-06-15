@@ -7,7 +7,7 @@ RUN rm -rf /usr/share/nginx/html/*
 # COPY --from=builder /app/dist/blood-donation-app/browser/* /usr/share/nginx/html/
 COPY dist/blood-donation-app/browser/* /usr/share/nginx/html/
 # Optional: custom nginx config if needed
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
