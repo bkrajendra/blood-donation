@@ -1,22 +1,45 @@
 services:
-  blood-donation-backend:
+  backend:
     image: bkrajendra/blooddonation-backend:latest
     container_name: backend
-    ports:
-      - "3000:3000"
+    # pull_policy: always
+    # ports:
+    #   - "3000:3000"
     volumes:
       - ./data:/app/data
     restart: always
     environment:
-        - NODE_ENV=production
-        - PORT=3000
+      - NODE_ENV=production
+      - PORT=3000
+    # networks:
+    #   - app-network
 
-  blood-donation-frontend:
+  frontend:
     image: bkrajendra/blooddonation-frontend:latest
     container_name: frontend
-    ports:
-      - "80:80"
+    # pull_policy: always
+    volumes:
+      - ./assets/config.json:/usr/share/nginx/html/assets/config.json    
+    # ports:
+    #   - "81:80"
     restart: always
     depends_on:
-      - blood-donation-backend
+      - backend
+    # networks:
+    #   - app-network
 
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    # networks:
+    #   - app-network
+     
+# networks:
+#   app-network:
+#     driver: bridge
