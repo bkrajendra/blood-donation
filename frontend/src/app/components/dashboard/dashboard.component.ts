@@ -216,6 +216,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   getTotalBloodVolume(): number {
-    return this.stats ? this.stats.donated * 450 : 0; // Average blood donation is 450ml
+    return this.stats ? this.stats.donated * 400 : 0; // Average blood donation is 450ml
   }
 }

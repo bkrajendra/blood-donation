@@ -1,7 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { Donation } from '../../donations/entities/donation.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from "typeorm";
+import { Donation } from "../../donations/entities/donation.entity";
 
-@Entity('users')
+@Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -39,6 +46,12 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Donation, donation => donation.user)
+  @OneToMany(() => Donation, (donation) => donation.user)
   donations: Donation[];
+
+  @Column({ nullable: true })
+  password: string; // store hash
+
+  @Column({ default: "bd_user" })
+  role: "bd_admin" | "bd_staff" | "bd_user";
 }

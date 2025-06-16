@@ -8,4 +8,5 @@ export class CreateUserDto {
   hasHealthIssues?: boolean;
   healthIssueDetails?: string;
   isEligible?: boolean;
+  password?: string; // Optional, can be set during registration
 }

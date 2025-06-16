@@ -1,0 +1,7 @@
+<div class="login-container">
+  <h2>Login</h2>
+  <input [(ngModel)]="mobile" placeholder="Mobile" />
+  <input [(ngModel)]="password" type="password" placeholder="Password" />
+  <button (click)="login()">Login</button>
+  <p *ngIf="error">{{ error }}</p>
+</div>

@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './auth/auth.guard';
+import { RoleGuard } from './auth/role.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/donor', pathMatch: 'full' },
@@ -8,7 +10,9 @@ export const routes: Routes = [
   },
   { 
     path: 'admin', 
-    loadComponent: () => import('./components/admin-panel/admin-panel.component').then(m => m.AdminPanelComponent)
+    loadComponent: () => import('./components/admin-panel/admin-panel.component').then(m => m.AdminPanelComponent),
+    // canActivate: [AuthGuard, RoleGuard],
+    // data: { roles: ['bd_admin'] }
   },
   { 
     path: 'dashboard', 
@@ -17,5 +21,13 @@ export const routes: Routes = [
   { 
     path: 'reports', 
     loadComponent: () => import('./components/reports/reports.component').then(m => m.ReportsComponent)
+  },
+  { 
+    path: 'login', 
+    loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
+  },
+    { 
+    path: 'unauthorized', 
+    loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
   }
 ];
