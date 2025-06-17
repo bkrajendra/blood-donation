@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService, Statistics } from '../../services/api.service';
+import { ApiService, Donation, Statistics } from '../../services/api.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -159,6 +159,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loading = false;
   lastUpdated = new Date();
   private intervalId: any;
+  donations: any[] = [];
 
   constructor(private apiService: ApiService) {}
 
@@ -188,7 +189,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   async loadStats() {
     try {
+      
       const year = this.selectedYear ? parseInt(this.selectedYear) : undefined;
+      
+      const [stats, donations, users] = await Promise.all([
+        this.apiService.getStatistics(year).toPromise(),
+        this.apiService.getAllDonations(year).toPromise(),
+        this.apiService.getAllUsers().toPromise(),
+      ]);
+      this.donations = donations || [];
       this.stats = await this.apiService.getStatistics(year).toPromise() || null;
       this.lastUpdated = new Date();
     } catch (error) {
@@ -214,8 +223,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.stats.donated >= 10) return '⭐';
     return '🩸';
   }
+calculateTotalBloodDonated() {
+    let total = {
+      male: 0,
+      female: 0,
+    };
 
+    for (const record of this.donations) {
+      if (record.status === "DONATED" && record.user) {
+        if (record.user.gender === "M") {
+          total.male += 450;
+        } else if (record.user.gender === "F") {
+          total.female += 350;
+        }
+      }
+    }
+    console.log("Total Blood Donated:", total);
+    return total;
+  }
   getTotalBloodVolume(): number {
-    return this.stats ? this.stats.donated * 400 : 0; // Average blood donation is 450ml
+    let total = this.calculateTotalBloodDonated();
+    return total.female + total.male;
   }
 }
