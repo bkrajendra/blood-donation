@@ -19,11 +19,14 @@ export class User {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
   @Column()
   age: number;
+
+  @Column({ nullable: true })
+  gender: string;
 
   @Column()
   bloodGroup: string;

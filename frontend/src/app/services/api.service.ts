@@ -10,6 +10,7 @@ export interface User {
   name: string;
   email: string;
   age: number;
+  gender?: string;
   bloodGroup: string;
   company: string;
   hasHealthIssues?: boolean;
