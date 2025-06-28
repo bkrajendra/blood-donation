@@ -6,7 +6,7 @@ async function bootstrap() {
   
   // Enable CORS for frontend communication
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: 'https://blooddonation-frontend-951597045316.asia-south1.run.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
