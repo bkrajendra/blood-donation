@@ -10,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'blood_donation.db',
+      database: '/data/blood_donation.db',
       entities: [User, Donation],
       synchronize: true,
     }),
